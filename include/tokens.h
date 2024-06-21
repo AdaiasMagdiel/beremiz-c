@@ -4,7 +4,8 @@
 #include "dynamic_array.h"
 
 enum TokenType {
-	NUMBER
+	NUMBER,
+	PLUS
 };
 
 typedef struct {
@@ -19,7 +20,7 @@ typedef struct {
 	Loc loc;
 } Token;
 
-void tokens_cleanup(Array *tokens);
+void tokens_array_cleanup(Array *tokens);
 void print_tokens(Array tokens);
 
 #endif  // TOKENS_H
