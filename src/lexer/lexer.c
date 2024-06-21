@@ -37,7 +37,7 @@ int isNumber(char ch) {
 	return (ch >= '0' && ch <= '9');
 }
 
-void scan(Lexer *lexer) {
+Array scan(Lexer *lexer) {
 	Array tokens;
 	array_init(&tokens, sizeof(Token));
 
@@ -57,15 +57,26 @@ void scan(Lexer *lexer) {
 			token.loc = location;
 
 			array_push(&tokens, &token);
+
+		} else if (ch == '+') {
+			Loc location = {lexer->file, lexer->line, lexer->col};
+
+			Token token;
+			token.type = PLUS;
+			token.value = malloc(sizeof(char));
+			*(char *)token.value = '+';
+			token.loc = location;
+
+			array_push(&tokens, &token);
+			consume(lexer);
+
 		} else {
 			consume(lexer);
 		}
 	}
 
-	print_tokens(tokens);
-
-	tokens_cleanup(&tokens);
 	cleanup(lexer);
+	return tokens;
 }
 
 void cleanup(Lexer *lexer) {
