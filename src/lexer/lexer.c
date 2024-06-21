@@ -45,10 +45,12 @@ void scan(Lexer *lexer) {
 			consume(lexer);
 		}
 	}
+
+	cleanup(lexer);
 }
 
 void cleanup(Lexer *lexer) {
-	if (strcmp(lexer->file, "REPL")) return;
+	if (strcmp(lexer->file, "REPL") == 0) return;
 
 	if (lexer->content) {
         free(lexer->content);
