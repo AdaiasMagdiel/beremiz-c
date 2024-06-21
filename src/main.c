@@ -4,18 +4,32 @@
 
 char *readFile(char *filepath);
 
-int main() {
-	char *file = "files/numbers.brz";
+void runProgram(Lexer *lexer) {
+	lexer->file = "REPL";
+	printf("The REPL was not implemented yet.\n");
+	printf("File: %s\n", lexer->file);
+}
 
+void runFile(Lexer *lexer, char *file) {
+	lexer->file = file;
+	lexer->content = readFile(file);
+	lexer->current = 0;
+	lexer->line = 1;
+	lexer->col = 1;
+
+	scan(lexer);
+}
+
+int main(int argc, char **argv) {
 	Lexer lexer = {0};
 
-	lexer.file = file;
-	lexer.content = readFile(file);
-	lexer.current = 0;
-	lexer.line = 1;
-	lexer.col = 1;
-
-	scan(&lexer);
+	if (argc == 1) {
+		runProgram(&lexer);
+	} else if (argc == 2) {
+		runFile(&lexer, argv[1]);
+	} else {
+		printf("Usage:\n    beremiz [file]\n\nArguments:\n    file:        Optional. File to execute, if no file was passed, the program will start the REPL.");
+	}
 
 	cleanup(&lexer);
 	return 0;
