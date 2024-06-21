@@ -38,14 +38,73 @@ void runProgram(Lexer *lexer) {
 	}
 }
 
+void parser(Array tokens) {
+	Array stack;
+	array_init(&stack, sizeof(Token));
+
+	// print_tokens(tokens);
+
+	for (int i=0; i<tokens.length; i++) {
+		Token *token = &((Token *)tokens.array)[i];
+		Token tk;
+
+        switch (token->type) {
+            case NUMBER:
+	            tk.type = NUMBER;
+	            tk.value = malloc(sizeof(int));
+	            *(int *)tk.value = *(int *)token->value;
+	            tk.loc = token->loc;
+
+	            array_push(&stack, &tk);
+
+                break;
+
+            case PLUS:
+            	// ERROR
+            	if (stack.length < 2) {
+	                fprintf(stderr, "Not enough operands in the stack for PLUS operation\n");
+
+	                tokens_array_cleanup(&tokens);
+					tokens_array_cleanup(&stack);
+
+	                exit(EXIT_FAILURE);
+	            }
+
+                Token b;
+                array_pop(&stack, &b);
+
+                Token a;
+                array_pop(&stack, &a);
+
+                tk.type = NUMBER;
+	            tk.value = malloc(sizeof(int));
+	            *(int *)tk.value = *(int *)a.value + *(int *)b.value;
+	            tk.loc = token->loc;
+
+	            array_push(&stack, &tk);
+
+	            free(a.value);
+	            free(b.value);
+
+                break;
+            default:
+                printf("Not Implemented.\n");
+                break;
+        }
+	}
+
+	print_tokens(stack);
+
+	tokens_array_cleanup(&tokens);
+	tokens_array_cleanup(&stack);
+}
+
 void runFile(Lexer *lexer, char *file) {
 	lexer->file = file;
 	lexer->content = readFile(file);
 
 	Array tokens = scan(lexer);
-	print_tokens(tokens);
-
-	tokens_array_cleanup(&tokens);
+	parser(tokens);
 }
 
 int main(int argc, char **argv) {
