@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "data_extractor.h"
 
 int extractNumber(Lexer *lexer) {
@@ -16,8 +17,10 @@ int extractNumber(Lexer *lexer) {
 			if (ch == '-' && isNegative) {
 				// ERROR
 				fprintf(stderr, "Malformed number.\n");
-				cleanup(lexer);
-				exit(1);
+				if (!strcmp(lexer->file, "REPL")) {
+					cleanup(lexer);
+					exit(1);
+				}
 			}
 
 			break;
