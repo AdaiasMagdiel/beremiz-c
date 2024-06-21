@@ -48,6 +48,8 @@ void scan(Lexer *lexer) {
 }
 
 void cleanup(Lexer *lexer) {
+	if (strcmp(lexer->file, "REPL")) return;
+
 	if (lexer->content) {
         free(lexer->content);
         lexer->content = NULL; // Set to NULL after freeing
