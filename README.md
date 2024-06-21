@@ -1,4 +1,4 @@
-## Beremiz - Reimplementade in C
+# Beremiz - Reimplementade in C
 
 Beremiz is a stack-based programming language that I created. It was initially created in Lua. This repository hosts a work-in-progress C reimplementation of the Beremiz language. The original Lua version remains the definitive and most up-to-date version, available at https://github.com/beremiz/beremiz.
 
