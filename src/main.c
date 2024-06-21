@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "lexer.h"
+#include "dynamic_array.h"
+#include "tokens.h"
 
 #define MAX_LINE_LENGTH 128
 
@@ -40,7 +42,10 @@ void runFile(Lexer *lexer, char *file) {
 	lexer->file = file;
 	lexer->content = readFile(file);
 
-	scan(lexer);
+	Array tokens = scan(lexer);
+	print_tokens(tokens);
+
+	tokens_array_cleanup(&tokens);
 }
 
 int main(int argc, char **argv) {
