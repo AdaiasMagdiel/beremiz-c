@@ -16,9 +16,9 @@ int extractNumber(Lexer *lexer) {
 		if (!isNumber(ch)) {
 			if (ch == '-' && isNegative) {
 				// ERROR
-				fprintf(stderr, "Malformed number.\n");
-				if (!strcmp(lexer->file, "REPL")) {
-					cleanup(lexer);
+				fprintf(stderr, "Error: Malformed number.\n");
+				cleanup(lexer);
+				if (strcmp(lexer->file, "REPL") != 0) {
 					exit(1);
 				}
 			}
