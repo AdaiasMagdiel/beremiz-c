@@ -9,14 +9,19 @@ void tokens_array_cleanup(Array *tokens) {
     }
 
     array_free(tokens);
-    printf("Limpando tokens");
+    printf("Cleaning tokens...\n");
 }
 
 void print_tokens(Array tokens) {
+    const char *types[] = {
+        "NUMBER",
+        "PLUS"
+    };
+
 	for (int i=0; i<tokens.length; i++) {
 		Token *token = &((Token *)tokens.array)[i];
 
-		printf("Type: %d", token->type);
+        printf("Type: %s", types[token->type]);
 
         switch (token->type) {
             case NUMBER:
