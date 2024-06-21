@@ -46,7 +46,7 @@ Array scan(Lexer *lexer) {
 
 		if (isNumber(ch)) {
 			int value = extractNumber(lexer);
-			printf("isNumber: %d\n", value);
+			// printf("isNumber: %d\n", value);
 
 			Loc location = {lexer->file, lexer->line, lexer->col};
 
