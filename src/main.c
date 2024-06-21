@@ -28,7 +28,11 @@ int main(int argc, char **argv) {
 	} else if (argc == 2) {
 		runFile(&lexer, argv[1]);
 	} else {
-		printf("Usage:\n    beremiz [file]\n\nArguments:\n    file:        Optional. File to execute, if no file was passed, the program will start the REPL.");
+		printf("Usage:\n"
+			   "    beremiz [file]\n\n"
+			   "Arguments:\n"
+			   "    file (optional):    Path to the Beremiz script file to execute.\n"
+			   "                        If no file is provided, the program will start the REPL.\n");
 	}
 
 	cleanup(&lexer);
@@ -44,20 +48,20 @@ char *readFile(char *filepath) {
 	}
 
 	fseek(fp, 0, SEEK_END);
-    long fileSize = ftell(fp);
-    fseek(fp, 0, SEEK_SET);
+	long fileSize = ftell(fp);
+	fseek(fp, 0, SEEK_SET);
 
-    char *buffer = (char *)malloc(fileSize + 1);
-    if (buffer == NULL) {
-        perror("Error: Unable to allocate memory to read file.");
-        fclose(fp);
-        exit(1);
-    }
+	char *buffer = (char *)malloc(fileSize + 1);
+	if (buffer == NULL) {
+		perror("Error: Unable to allocate memory to read file.");
+		fclose(fp);
+		exit(1);
+	}
 
-    fread(buffer, 1, fileSize, fp);
-    buffer[fileSize] = '\0';
+	fread(buffer, 1, fileSize, fp);
+	buffer[fileSize] = '\0';
 
-    fclose(fp);
+	fclose(fp);
 
-    return buffer;
+	return buffer;
 }
