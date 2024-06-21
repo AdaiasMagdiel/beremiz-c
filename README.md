@@ -1,6 +1,17 @@
 ## Beremiz - Reimplementade in C
 
-Beremiz is a stack-based programming language, that I made, initially created in Lua. This repository hosts a work-in-progress C reimplementation of the Beremiz language. The original Lua version remains the definitive and most up-to-date version, available at [https://github.com/beremiz/beremiz](https://github.com/beremiz/beremiz).
+Beremiz is a stack-based programming language that I created. It was initially created in Lua. This repository hosts a work-in-progress C reimplementation of the Beremiz language. The original Lua version remains the definitive and most up-to-date version, available at https://github.com/beremiz/beremiz.
+
+## Table of Contents
+
+- [Purpose](#purpose)
+- [Getting Started](#getting-started)
+  - [Installation](#installation)
+  - [Building the Project](#building-the-project)
+  - [Running the Project](#running-the-project)
+- [License](#license)
+- [Contributing](#contributing)
+- [Additional Notes](#additional-notes)
 
 ## Purpose
 
