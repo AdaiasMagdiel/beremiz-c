@@ -86,10 +86,11 @@ Array scan(Lexer *lexer) {
 
 				error_token(buffer, token);
 
-				tokens_array_cleanup(&tokens);
-	            cleanup(lexer);
-
-	            exit(EXIT_FAILURE);
+	            if (strcmp(lexer->file, "REPL") != 0) {
+	            	tokens_array_cleanup(&tokens);
+	            	cleanup(lexer);
+					exit(EXIT_FAILURE);
+				}
 			}
 
 			array_push(&tokens, &token);
