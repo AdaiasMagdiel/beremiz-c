@@ -9,5 +9,6 @@ int isAlphaNumeric(char ch);
 
 int extractNumber(Lexer *lexer);
 char *extractIdentifier(Lexer *lexer);
+char *extractString(Lexer *lexer);
 
 #endif  // DATA_EXTRACTOR_H

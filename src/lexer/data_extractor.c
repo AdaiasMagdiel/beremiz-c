@@ -1,6 +1,8 @@
+#include <stdio.h>
 #include <stdlib.h>
 #include "data_extractor.h"
 #include "error.h"
+#include "lexer.h"
 
 int isNumber(char ch) {
 	return (ch >= '0' && ch <= '9');
@@ -72,6 +74,45 @@ char *extractIdentifier(Lexer *lexer) {
 
         if (!isAlphaNumeric(ch)) {
             break;
+        }
+
+        if (buffer_idx >= buffer_size - 1) {
+            buffer_size *= 2;
+            char *new_buffer = realloc(buffer, buffer_size * sizeof(char));
+            buffer = new_buffer;
+        }
+
+        buffer[buffer_idx] = ch;
+        buffer_idx++;
+        consume(lexer);
+    }
+
+    buffer[buffer_idx] = '\0';
+
+    return buffer;
+}
+
+char *extractString(Lexer *lexer) {
+    int buffer_size = 32;
+    char *buffer = (char *)malloc(buffer_size * sizeof(char));
+    int buffer_idx = 0;
+    char ch;
+
+    // Jump the quote "
+    consume(lexer);
+
+    while (1) {
+        ch = peek(lexer, 0);
+
+        if (ch == '"' && peek(lexer, -1) != '\\') {
+        	consume(lexer);
+            break;
+        }
+
+        if (isAtEnd(lexer)) {
+        	// ERROR
+        	printf("Unclosed string");
+        	exit(EXIT_FAILURE);
         }
 
         if (buffer_idx >= buffer_size - 1) {
