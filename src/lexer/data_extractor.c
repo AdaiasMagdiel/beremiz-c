@@ -93,9 +93,13 @@ char *extractIdentifier(Lexer *lexer) {
 }
 
 char *extractString(Lexer *lexer) {
+	int startCol = lexer->col;
+	int startLine = lexer->line;
+
     int buffer_size = 32;
     char *buffer = (char *)malloc(buffer_size * sizeof(char));
     int buffer_idx = 0;
+
     char ch;
 
     // Jump the quote "
@@ -110,9 +114,8 @@ char *extractString(Lexer *lexer) {
         }
 
         if (isAtEnd(lexer)) {
-        	// ERROR
-        	printf("Unclosed string");
-        	exit(EXIT_FAILURE);
+        	Loc location = {lexer->file, startLine, startCol};
+			error("Syntax Error: Unclosed string.", location);
         }
 
         if (buffer_idx >= buffer_size - 1) {
