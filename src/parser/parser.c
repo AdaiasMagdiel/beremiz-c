@@ -9,8 +9,10 @@ void parser(Array tokens) {
 	Array stack;
 	array_init(&stack, sizeof(Token));
 
-	for (int i=0; i<tokens.length; i++) {
-		Token *token = &((Token *)tokens.array)[i];
+	int ip = 0;
+
+	while (ip < tokens.length) {
+		Token *token = &((Token *)tokens.array)[ip];
 
 		switch(token->type) {
 			case NUMBER: {
@@ -21,6 +23,7 @@ void parser(Array tokens) {
 				tk.loc = token->loc;
 
 				array_push(&stack, &tk);
+				ip++;
 
 			} break;
 
@@ -32,6 +35,7 @@ void parser(Array tokens) {
 			    tk.loc = token->loc;
 
 			    array_push(&stack, &tk);
+			    ip++;
 
 			} break;
 
@@ -92,6 +96,7 @@ void parser(Array tokens) {
 
 				free(a.value);
 				free(b.value);
+				ip++;
 
 			} break;
 
@@ -127,6 +132,8 @@ void parser(Array tokens) {
 
 					error_token(buffer, *token);
 				}
+
+				ip++;
 
 			} break;
 
@@ -178,10 +185,11 @@ void parser(Array tokens) {
 				}
 
 				array_push(&stack, &tk);
+				ip++;
 
 			} break;
 
-		case OVER: {
+			case OVER: {
 				if (stack.length < 2) {
 					error_token(
 						"Error: The OVER operation expects two values "
@@ -229,6 +237,7 @@ void parser(Array tokens) {
 				}
 
 				array_push(&stack, &tk);
+				ip++;
 
 			} break;
 
@@ -240,7 +249,11 @@ void parser(Array tokens) {
 					token_type_to_str(token->type)
 				);
 
+				tokens_array_cleanup(&tokens);
+				tokens_array_cleanup(&stack);
+
 				error_token(buffer, *token);
+				ip++;
 
 			} break;
 		}
