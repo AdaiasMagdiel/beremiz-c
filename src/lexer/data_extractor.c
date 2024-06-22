@@ -1,5 +1,5 @@
-#include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "data_extractor.h"
 #include "error.h"
 #include "lexer.h"
@@ -34,13 +34,19 @@ int extractNumber(Lexer *lexer) {
 				Loc location = {lexer->file, lexer->line, startCol};
 
 				error(
-					"Error: Invalid Number Format. The input contains an "
+					"Error: Invalid Number Format.\n\nThe input contains an "
 					"invalid number. Specifically, two minus signs (-) were "
 					"found in a row, which is not allowed in number "
 					"formatting.",
 					location
 				);
-				cleanup(lexer);
+
+				if (strcmp(lexer->file, "REPL") != 0) {
+					cleanup(lexer);
+					exit(EXIT_FAILURE);
+				} else {
+					break;
+				}
 			}
 
 			break;
@@ -116,6 +122,10 @@ char *extractString(Lexer *lexer) {
         if (isAtEnd(lexer)) {
         	Loc location = {lexer->file, startLine, startCol};
 			error("Syntax Error: Unclosed string.", location);
+
+			if (strcmp(lexer->file, "REPL") != 0) {
+				exit(EXIT_FAILURE);
+			}
         }
 
         if (buffer_idx >= buffer_size - 1) {
