@@ -68,6 +68,9 @@ Array scan(Lexer *lexer) {
 			} else if (strcmp(value, "dup") == 0) {
 				token.type = DUP;
 
+			} else if (strcmp(value, "over") == 0) {
+				token.type = OVER;
+
 			} else {
 				// ERROR (but change later to IDENTIFIER type)
 				char buffer[32];
