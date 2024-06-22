@@ -57,6 +57,15 @@ void parser(Array tokens) {
 				tk.value = malloc(sizeof(int));
 				*(int *)tk.value = *(int *)a.value + *(int *)b.value;
 
+			} else if (a.type == STRING && b.type == STRING) {
+				int a_length = strlen((char *)a.value);
+				int b_length = strlen((char *)b.value);
+
+				tk.type = STRING;
+				tk.value = malloc(a_length + b_length + 1);
+				strcpy(tk.value, (char *)a.value);
+				strcat(tk.value, (char *)b.value);
+
 			} else {
 				char buffer[128];
 				snprintf(
