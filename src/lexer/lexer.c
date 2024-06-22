@@ -33,10 +33,6 @@ char peek(Lexer *lexer, int idx) {
 	return lexer->content[lexer->current + idx];
 }
 
-int isNumber(char ch) {
-	return (ch >= '0' && ch <= '9');
-}
-
 Array scan(Lexer *lexer) {
 	Array tokens;
 	array_init(&tokens, sizeof(Token));
@@ -54,6 +50,18 @@ Array scan(Lexer *lexer) {
 			token.type = NUMBER;
 			token.value = malloc(sizeof(int));
 			*(int *)token.value = value;
+			token.loc = location;
+
+			array_push(&tokens, &token);
+
+		} else if (isAlphaNumeric(ch)) {
+			char *value = extractIdentifier(lexer);
+
+			Loc location = {lexer->file, lexer->line, lexer->col - strlen(value)};
+
+			Token token;
+			token.type = SHOW;
+			token.value = (char *)value;
 			token.loc = location;
 
 			array_push(&tokens, &token);
