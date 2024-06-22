@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "parser.h"
 #include "tokens.h"
 #include "error.h"
@@ -19,6 +20,15 @@ void parser(Array tokens) {
 			tk.loc = token->loc;
 
 			array_push(&stack, &tk);
+
+		} else if (token->type == STRING) {
+			Token tk;
+		    tk.type = STRING;
+		    tk.value = malloc(strlen((char *)token->value) + 1);
+		    strcpy(tk.value, (char *)token->value);
+		    tk.loc = token->loc;
+
+		    array_push(&stack, &tk);
 
 		} else if (token->type == PLUS) {
 			if (stack.length < 2) {
@@ -88,12 +98,29 @@ void parser(Array tokens) {
 			if (value.type == NUMBER) {
 				printf("%d\n", *(int *)value.value);
 
+			} else if (value.type == STRING) {
+				printf("%s\n", (char *)value.value);
+
 			} else {
-				printf("Not implemented type `%s` for `SHOW` operation.\n", token_type_to_str(token->type));
+				char buffer[72];
+				snprintf(
+					buffer, sizeof(buffer),
+					"Not implemented type `%s` for `SHOW` operation.\n",
+					token_type_to_str(value.type)
+				);
+
+				error_token(buffer, *token);
 			}
 
 		} else {
-			printf("Not Implemented `%s` in `parser`.\n", token_type_to_str(token->type));
+			char buffer[72];
+			snprintf(
+				buffer, sizeof(buffer),
+				"Not Implemented `%s` in `parser`.\n",
+				token_type_to_str(token->type)
+			);
+
+			error_token(buffer, *token);
 		}
 	}
 
