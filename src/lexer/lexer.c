@@ -43,7 +43,6 @@ Array scan(Lexer *lexer) {
 
 		if (isNumber(ch)) {
 			int value = extractNumber(lexer);
-			// printf("isNumber: %d\n", value);
 
 			Loc location = {lexer->file, lexer->line, lexer->col};
 
@@ -69,9 +68,9 @@ Array scan(Lexer *lexer) {
 			} else {
 				// ERROR (but change later to IDENTIFIER type)
 				char buffer[32];
-				sprintf(buffer, "Unexpected '%s'", value);
+				snprintf(buffer, sizeof(buffer), "Unexpected '%s'", value);
 
-				error(buffer, location);
+				error_token(buffer, token);
 
 				tokens_array_cleanup(&tokens);
 	            cleanup(lexer);
