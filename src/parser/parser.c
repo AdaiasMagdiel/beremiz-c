@@ -181,6 +181,57 @@ void parser(Array tokens) {
 
 			} break;
 
+		case OVER: {
+				if (stack.length < 2) {
+					error_token(
+						"Error: The OVER operation expects two values "
+						"on the stack. Please ensure you have these "
+						"values onto the stack before executing OVER.",
+						*token
+					);
+
+					tokens_array_cleanup(&tokens);
+					tokens_array_cleanup(&stack);
+				}
+
+				Token token_to_over = ((Token *)stack.array)[stack.length - 2];
+
+				Token tk;
+				tk.loc = token->loc;
+
+				if (token_to_over.type == NUMBER) {
+					tk.type = NUMBER;
+					tk.value = malloc(sizeof(int));
+					*(int *)tk.value = *(int *)token_to_over.value;
+
+				} else if (token_to_over.type == STRING) {
+					int length = strlen((char *)token_to_over.value);
+
+					tk.type = STRING;
+					tk.value = malloc(length + 1);
+					strcpy(tk.value, (char *)token_to_over.value);
+
+				} else {
+					char buffer[128];
+					snprintf(
+						buffer,
+						sizeof(buffer),
+						"Error: The DUP operator expects a number or string "
+						"on the stack.  However, you provided a value of "
+						"type '%s'.",
+						token_type_to_str(token_to_over.type)
+					);
+
+					error_token(buffer, *token);
+
+					tokens_array_cleanup(&tokens);
+					tokens_array_cleanup(&stack);
+				}
+
+				array_push(&stack, &tk);
+
+			} break;
+
 			default: {
 				char buffer[72];
 				snprintf(
