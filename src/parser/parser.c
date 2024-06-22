@@ -130,6 +130,57 @@ void parser(Array tokens) {
 
 			} break;
 
+			case DUP: {
+				if (stack.length < 1) {
+					error_token(
+						"Error: The DUP operation expects a value "
+						"on the stack. Please ensure you have pushed a "
+						"value onto the stack before executing DUP.",
+						*token
+					);
+
+					tokens_array_cleanup(&tokens);
+					tokens_array_cleanup(&stack);
+				}
+
+				Token token_to_dup = ((Token *)stack.array)[stack.length - 1];
+
+				Token tk;
+				tk.loc = token->loc;
+
+				if (token_to_dup.type == NUMBER) {
+					tk.type = NUMBER;
+					tk.value = malloc(sizeof(int));
+					*(int *)tk.value = *(int *)token_to_dup.value;
+
+				} else if (token_to_dup.type == STRING) {
+					int length = strlen((char *)token_to_dup.value);
+
+					tk.type = STRING;
+					tk.value = malloc(length + 1);
+					strcpy(tk.value, (char *)token_to_dup.value);
+
+				} else {
+					char buffer[128];
+					snprintf(
+						buffer,
+						sizeof(buffer),
+						"Error: The DUP operator expects a number or string "
+						"on the stack.  However, you provided a value of "
+						"type '%s'.",
+						token_type_to_str(token_to_dup.type)
+					);
+
+					error_token(buffer, *token);
+
+					tokens_array_cleanup(&tokens);
+					tokens_array_cleanup(&stack);
+				}
+
+				array_push(&stack, &tk);
+
+			} break;
+
 			default: {
 				char buffer[72];
 				snprintf(
