@@ -5,7 +5,8 @@
 
 enum TokenType {
 	NUMBER,
-	PLUS
+	PLUS,
+	SHOW
 };
 
 typedef struct {
@@ -22,5 +23,6 @@ typedef struct {
 
 void tokens_array_cleanup(Array *tokens);
 void print_tokens(Array tokens);
+const char *token_type_to_str(enum TokenType type);
 
 #endif  // TOKENS_H
