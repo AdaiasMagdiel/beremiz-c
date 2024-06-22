@@ -2,6 +2,12 @@
 #include <stdlib.h>
 #include "tokens.h"
 
+const char *tokenTypeStrings[] = {
+    #define X(enum_val, string_val) string_val,
+    TOKEN_TYPES
+    #undef X
+};
+
 void tokens_array_cleanup(Array *tokens) {
     for (int i = 0; i < tokens->length; i++) {
         Token *token = &((Token *)tokens->array)[i];
@@ -9,12 +15,11 @@ void tokens_array_cleanup(Array *tokens) {
     }
 
     array_free(tokens);
-    printf("Cleaning tokens...\n");
 }
 
 void print_tokens(Array tokens) {
-	for (int i=0; i<tokens.length; i++) {
-		Token *token = &((Token *)tokens.array)[i];
+    for (int i = 0; i < tokens.length; i++) {
+        Token *token = &((Token *)tokens.array)[i];
 
         printf("Type: %s", token_type_to_str(token->type));
 
@@ -26,21 +31,19 @@ void print_tokens(Array tokens) {
                 printf(" | Value: %c\n", *(char *)token->value);
                 break;
             case SHOW:
+            case STRING:
                 printf(" | Value: %s\n", (char *)token->value);
                 break;
             default:
                 printf(" | Not Implemented `%s` in `print_tokens`.\n", token_type_to_str(token->type));
                 break;
         }
-	}
+    }
 }
 
-const char *token_type_to_str(enum TokenType type) {
-    const char *types[] = {
-        "NUMBER",
-        "PLUS",
-        "SHOW"
-    };
-
-    return types[type];
+const char *token_type_to_str(TokenType type) {
+    if (type >= 0 && type < TOKEN_TYPE_COUNT) {
+        return tokenTypeStrings[type];
+    }
+    return "UNKNOWN";
 }
