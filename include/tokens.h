@@ -9,6 +9,7 @@
     X(PLUS,   "PLUS")   \
     X(SHOW,   "SHOW")   \
     X(DUP,    "DUP")    \
+    X(OVER,   "OVER")   \
 
 typedef enum {
     #define X(enum_val, string_val) enum_val,

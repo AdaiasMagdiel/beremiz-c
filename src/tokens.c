@@ -33,6 +33,7 @@ void print_tokens(Array tokens) {
             case SHOW:
             case STRING:
             case DUP:
+            case OVER:
                 printf(" | Value: %s\n", (char *)token->value);
                 break;
             default:
