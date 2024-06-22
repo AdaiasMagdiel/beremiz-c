@@ -1,0 +1,5 @@
+1 1 = show
+1 2 = show
+true true = show
+false false = show
+true false = show
