@@ -3,6 +3,11 @@
 
 #include "lexer.h"
 
+int isNumber(char ch);
+int isAlpha(char ch);
+int isAlphaNumeric(char ch);
+
 int extractNumber(Lexer *lexer);
+char *extractIdentifier(Lexer *lexer);
 
 #endif  // DATA_EXTRACTOR_H
