@@ -39,10 +39,22 @@ void parser(Array tokens) {
 
 			} break;
 
+			case BOOL_: {
+				Token tk;
+			    tk.type = BOOL_;
+			    tk.value = malloc(strlen((char *)token->value) + 1);
+			    strcpy(tk.value, (char *)token->value);
+			    tk.loc = token->loc;
+
+			    array_push(&stack, &tk);
+			    ip++;
+
+			} break;
+
 			case PLUS: {
 				if (stack.length < 2) {
 					error_token(
-						"Error: Missing operand for PLUS operation. Please ensure "
+						"Error: Missing operands for PLUS operation. Please ensure "
 						"you have at least two values available before performing "
 						"the addition.",
 						*token
@@ -100,6 +112,158 @@ void parser(Array tokens) {
 
 			} break;
 
+			case EQUAL: {
+				if (stack.length < 2) {
+					error_token(
+						"Error: Missing operands for EQUAL operation.\n\n"
+						"Please ensure you have at least two values available "
+						"before performing the comparasion.",
+						*token
+					);
+
+					tokens_array_cleanup(&tokens);
+					tokens_array_cleanup(&stack);
+				}
+
+				Token b;
+				array_pop(&stack, &b);
+
+				Token a;
+				array_pop(&stack, &a);
+
+				Token tk;
+				tk.type = BOOL_;
+				tk.loc = token->loc;
+
+				if (a.type == NUMBER && b.type == NUMBER) {
+					if (*(int *)a.value == *(int *)b.value) {
+						char *value = "true";
+						tk.value = malloc(sizeof(char) * strlen(value) + 1);
+						strcpy(tk.value, value);
+
+					} else {
+						char *value = "false";
+						tk.value = malloc(sizeof(char) * strlen(value) + 1);
+						strcpy(tk.value, value);
+					}
+
+				} else if (
+					(a.type == STRING && b.type == STRING) ||
+					(a.type == BOOL_ && b.type == BOOL_)
+				) {
+					if (strcmp((char *)a.value, (char *)b.value) == 0) {
+						char *value = "true";
+						tk.value = malloc(sizeof(char) * strlen(value) + 1);
+						strcpy(tk.value, value);
+
+					} else {
+						char *value = "false";
+						tk.value = malloc(sizeof(char) * strlen(value) + 1);
+						strcpy(tk.value, value);
+					}
+
+				} else {
+					char buffer[256];
+					snprintf(
+						buffer,
+						sizeof(buffer),
+						"Error: Invalid Comparison\n\n"
+						"The EQUAL operation can only compare values of the "
+						"same type: numbers, strings, or booleans. You cannot "
+						"compare '%s' with '%s' without an explicit conversion.",
+						token_type_to_str(a.type), token_type_to_str(b.type)
+					);
+
+					error_token(buffer, *token);
+
+					tokens_array_cleanup(&tokens);
+					tokens_array_cleanup(&stack);
+				}
+
+				array_push(&stack, &tk);
+
+				free(a.value);
+				free(b.value);
+				ip++;
+
+			} break;
+
+			case NEQUAL: {
+				if (stack.length < 2) {
+					error_token(
+						"Error: Missing operands for NOT EQUAL operation.\n\n"
+						"Please ensure you have at least two values available "
+						"before performing the comparasion.",
+						*token
+					);
+
+					tokens_array_cleanup(&tokens);
+					tokens_array_cleanup(&stack);
+				}
+
+				Token b;
+				array_pop(&stack, &b);
+
+				Token a;
+				array_pop(&stack, &a);
+
+				Token tk;
+				tk.type = BOOL_;
+				tk.loc = token->loc;
+
+				if (a.type == NUMBER && b.type == NUMBER) {
+					if (*(int *)a.value != *(int *)b.value) {
+						char *value = "true";
+						tk.value = malloc(sizeof(char) * strlen(value) + 1);
+						strcpy(tk.value, value);
+
+					} else {
+						char *value = "false";
+						tk.value = malloc(sizeof(char) * strlen(value) + 1);
+						strcpy(tk.value, value);
+					}
+
+				} else if (
+					(a.type == STRING && b.type == STRING) ||
+					(a.type == BOOL_ && b.type == BOOL_)
+				) {
+					if (strcmp((char *)a.value, (char *)b.value) != 0) {
+						char *value = "true";
+						tk.value = malloc(sizeof(char) * strlen(value) + 1);
+						strcpy(tk.value, value);
+
+					} else {
+						char *value = "false";
+						tk.value = malloc(sizeof(char) * strlen(value) + 1);
+						strcpy(tk.value, value);
+					}
+
+				} else {
+					char buffer[256];
+					snprintf(
+						buffer,
+						sizeof(buffer),
+						"Error: Invalid Comparison\n\n"
+						"The NOT EQUAL operation can only compare values of the "
+						"same type: numbers, strings, or booleans. You cannot "
+						"compare '%s' with '%s' without an explicit conversion.",
+						token_type_to_str(a.type), token_type_to_str(b.type)
+					);
+
+					error_token(buffer, *token);
+
+					tokens_array_cleanup(&tokens);
+					tokens_array_cleanup(&stack);
+				}
+
+				array_push(&stack, &tk);
+
+				free(a.value);
+				free(b.value);
+				ip++;
+
+			} break;
+
 			case SHOW: {
 				if (stack.length < 1) {
 					error_token(
@@ -120,6 +284,9 @@ void parser(Array tokens) {
 					printf("%d\n", *(int *)value.value);
 
 				} else if (value.type == STRING) {
+					printf("%s\n", (char *)value.value);
+
+				} else if (value.type == BOOL_) {
 					printf("%s\n", (char *)value.value);
 
 				} else {
