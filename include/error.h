@@ -4,5 +4,6 @@
 #include "tokens.h"
 
 void error(char *message, Loc location);
+void error_token(char *message, Token token);
 
 #endif  // ERROR_H
