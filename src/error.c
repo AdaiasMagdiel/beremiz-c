@@ -1,5 +1,4 @@
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 #include "error.h"
 #include "file_utils.h"
@@ -11,10 +10,6 @@ void error(char *message, Loc location) {
 		location.file, location.line, location.col,
 		message
 	);
-
-	if (strcmp(location.file, "REPL") != 0) {
-		exit(EXIT_FAILURE);
-	}
 }
 
 void error_token(char *message, Token token) {
@@ -46,5 +41,4 @@ void error_token(char *message, Token token) {
     fprintf(stderr, "\x1b[0m\n");
 
     lines_cleanup(lines, lineCount);
-    exit(EXIT_FAILURE);
 }
