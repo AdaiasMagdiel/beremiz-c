@@ -6,6 +6,7 @@
 #include "tokens.h"
 #include "data_extractor.h"
 #include "dynamic_array.h"
+#include "error.h"
 
 int isAtEnd(Lexer *lexer) {
 	const int length = strlen(lexer->content);
@@ -58,11 +59,25 @@ Array scan(Lexer *lexer) {
 			char *value = extractIdentifier(lexer);
 
 			Loc location = {lexer->file, lexer->line, lexer->col - strlen(value)};
-
 			Token token;
-			token.type = SHOW;
 			token.value = (char *)value;
 			token.loc = location;
+
+			if (strcmp(value, "show") == 0) {
+				token.type = SHOW;
+
+			} else {
+				// ERROR (but change later to IDENTIFIER type)
+				char buffer[32];
+				sprintf(buffer, "Unexpected '%s'", value);
+
+				error(buffer, location);
+
+				tokens_array_cleanup(&tokens);
+	            cleanup(lexer);
+
+	            exit(EXIT_FAILURE);
+			}
 
 			array_push(&tokens, &token);
 
@@ -92,6 +107,6 @@ void cleanup(Lexer *lexer) {
 
 	if (lexer->content) {
         free(lexer->content);
-        lexer->content = NULL; // Set to NULL after freeing
+        lexer->content = NULL;
     }
 }
