@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "data_extractor.h"
+#include "error.h"
 
 int isNumber(char ch) {
 	return (ch >= '0' && ch <= '9');
@@ -18,6 +19,7 @@ int isAlphaNumeric(char ch) {
 }
 
 int extractNumber(Lexer *lexer) {
+	int startCol = lexer->col;
 	char buffer[17];
 	int buffer_idx = 0;
 	char ch;
@@ -30,11 +32,10 @@ int extractNumber(Lexer *lexer) {
 		if (!isNumber(ch)) {
 			if (ch == '-' && isNegative) {
 				// ERROR
-				fprintf(stderr, "Error: Malformed number.\n");
+				Loc location = {lexer->file, lexer->line, startCol};
+
+				error("Error: Malformed number.", location);
 				cleanup(lexer);
-				if (strcmp(lexer->file, "REPL") != 0) {
-					exit(1);
-				}
 			}
 
 			break;
