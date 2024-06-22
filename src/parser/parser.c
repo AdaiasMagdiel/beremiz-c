@@ -13,60 +13,87 @@ void parser(Array tokens) {
 
 		if (token->type == NUMBER) {
 			Token tk;
-            tk.type = NUMBER;
-            tk.value = malloc(sizeof(int));
-            *(int *)tk.value = *(int *)token->value;
-            tk.loc = token->loc;
+			tk.type = NUMBER;
+			tk.value = malloc(sizeof(int));
+			*(int *)tk.value = *(int *)token->value;
+			tk.loc = token->loc;
 
-            array_push(&stack, &tk);
+			array_push(&stack, &tk);
 
 		} else if (token->type == PLUS) {
-			// ERROR
-        	if (stack.length < 2) {
-        		error("Not enough operands in the stack for PLUS operation.", token->loc);
+			if (stack.length < 2) {
+				error_token(
+					"Error: Missing operand for PLUS operation. Please ensure "
+					"you have at least two values available before performing "
+					"the addition.",
+					*token
+				);
 
-                tokens_array_cleanup(&tokens);
+				tokens_array_cleanup(&tokens);
 				tokens_array_cleanup(&stack);
-            }
+			}
 
-            Token b;
-            array_pop(&stack, &b);
+			Token b;
+			array_pop(&stack, &b);
 
-            Token a;
-            array_pop(&stack, &a);
+			Token a;
+			array_pop(&stack, &a);
 
-            Token tk;
-            tk.type = NUMBER;
-            tk.value = malloc(sizeof(int));
-            *(int *)tk.value = *(int *)a.value + *(int *)b.value;
-            tk.loc = token->loc;
+			Token tk;
+			tk.loc = token->loc;
 
-            array_push(&stack, &tk);
+			if (a.type == NUMBER && b.type == NUMBER) {
+				tk.type = NUMBER;
+				tk.value = malloc(sizeof(int));
+				*(int *)tk.value = *(int *)a.value + *(int *)b.value;
 
-            free(a.value);
-            free(b.value);
+			} else {
+				char buffer[128];
+				snprintf(
+					buffer,
+					sizeof(buffer),
+					"Error: The PLUS operator expects two numbers to sum or "
+					"two strings to concatenate. However, you provided '%s' "
+					"and '%s' instead.",
+					token_type_to_str(a.type), token_type_to_str(b.type)
+				);
 
-        } else if (token->type == SHOW) {
-        	// ERROR
-        	if (stack.length < 1) {
-                error("Not enough operands in the stack for SHOW operation.", token->loc);
+				error_token(buffer, *token);
 
-                tokens_array_cleanup(&tokens);
+				tokens_array_cleanup(&tokens);
 				tokens_array_cleanup(&stack);
-            }
+			}
 
-            Token value;
-            array_pop(&stack, &value);
+			array_push(&stack, &tk);
 
-            if (value.type == NUMBER) {
-            	printf("%d\n", *(int *)value.value);
+			free(a.value);
+			free(b.value);
 
-            } else {
-            	printf("Not implemented type `%s` for `SHOW` operation.\n", token_type_to_str(token->type));
-            }
+		} else if (token->type == SHOW) {
+			if (stack.length < 1) {
+				error_token(
+					"Error: The SHOW operation expects a value "
+					"on the stack. Please ensure you have pushed a "
+					"value onto the stack before executing SHOW.",
+					*token
+				);
+
+				tokens_array_cleanup(&tokens);
+				tokens_array_cleanup(&stack);
+			}
+
+			Token value;
+			array_pop(&stack, &value);
+
+			if (value.type == NUMBER) {
+				printf("%d\n", *(int *)value.value);
+
+			} else {
+				printf("Not implemented type `%s` for `SHOW` operation.\n", token_type_to_str(token->type));
+			}
 
 		} else {
-			printf("Not Implemented in `parser`.\n");
+			printf("Not Implemented `%s` in `parser`.\n", token_type_to_str(token->type));
 		}
 	}
 
