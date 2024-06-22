@@ -80,6 +80,17 @@ Array scan(Lexer *lexer) {
 
 			array_push(&tokens, &token);
 
+		} else if (ch == '"') {
+			char *value = extractString(lexer);
+			
+			Loc location = {lexer->file, lexer->line, lexer->col - strlen(value)-2};
+			Token token;
+			token.type = STRING;
+			token.value = (char *)value;
+			token.loc = location;
+
+			array_push(&tokens, &token);
+
 		} else if (ch == '+') {
 			Loc location = {lexer->file, lexer->line, lexer->col};
 
