@@ -14,7 +14,6 @@ typedef struct {
 int isAtEnd(Lexer *lexer);
 char peek(Lexer *lexer, int idx);
 char consume(Lexer *lexer);
-int isNumber(char ch);
 Array scan(Lexer *lexer);
 void cleanup(Lexer *lexer);
 
