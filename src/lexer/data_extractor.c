@@ -1,6 +1,4 @@
-#include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
 #include "data_extractor.h"
 #include "error.h"
 
@@ -31,10 +29,15 @@ int extractNumber(Lexer *lexer) {
 
 		if (!isNumber(ch)) {
 			if (ch == '-' && isNegative) {
-				// ERROR
 				Loc location = {lexer->file, lexer->line, startCol};
 
-				error("Error: Malformed number.", location);
+				error(
+					"Error: Invalid Number Format. The input contains an "
+					"invalid number. Specifically, two minus signs (-) were "
+					"found in a row, which is not allowed in number "
+					"formatting.",
+					location
+				);
 				cleanup(lexer);
 			}
 
