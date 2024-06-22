@@ -14,17 +14,28 @@ SRC = $(wildcard $(SRC_DIR)/*.c) \
 
 OBJ = $(SRC:.c=.o)
 
+TARGET_DIR = beremiz
+
 ifeq ($(OS),Windows_NT)
-    TARGET = beremiz.exe
+    TARGET = $(TARGET_DIR)/beremiz.exe
+    REMOVE_DIR = if exist $(TARGET_DIR) (rd /s /q $(TARGET_DIR))
 else
-    TARGET = beremiz
+    TARGET = $(TARGET_DIR)/beremiz
+    REMOVE_DIR = rm -rf $(TARGET_DIR)
 endif
 
-.PHONY: all clean
+.PHONY: all build clean
 
-all: $(TARGET)
+all: build
+
+build: $(TARGET)
 
 $(TARGET): $(OBJ)
+	@echo "Cleaning up the target directory..."
+	-@$(REMOVE_DIR)
+	@echo "Creating the target directory..."
+	@mkdir -p $(TARGET_DIR)
+	@echo "Building the target..."
 	$(CC) $(CFLAGS) $(FLAGS) $(OBJ) -o $(TARGET)
 
 %.o: %.c
