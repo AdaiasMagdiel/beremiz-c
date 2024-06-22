@@ -6,7 +6,12 @@
 #define TOKEN_TYPES     \
     X(NUMBER, "NUMBER") \
     X(STRING, "STRING") \
+    X(BOOL_,  "BOOL")   \
+\
     X(PLUS,   "PLUS")   \
+    X(EQUAL,  "EQUAL")  \
+    X(NEQUAL, "NEQUAL") \
+\
     X(SHOW,   "SHOW")   \
     X(DUP,    "DUP")    \
     X(OVER,   "OVER")   \

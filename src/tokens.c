@@ -28,12 +28,15 @@ void print_tokens(Array tokens) {
                 printf(" | Value: %d\n", *(int *)token->value);
                 break;
             case PLUS:
+            case EQUAL:
                 printf(" | Value: %c\n", *(char *)token->value);
                 break;
             case SHOW:
             case STRING:
+            case BOOL_:
             case DUP:
             case OVER:
+            case NEQUAL:
                 printf(" | Value: %s\n", (char *)token->value);
                 break;
             default:
