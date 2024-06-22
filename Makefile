@@ -4,10 +4,12 @@ FLAGS = -I./include
 
 SRC_DIR = src
 LEXER_DIR = $(SRC_DIR)/lexer
+PARSER_DIR = $(SRC_DIR)/parser
 DATA_TYPES_DIR = $(SRC_DIR)/data_types
 
 SRC = $(wildcard $(SRC_DIR)/*.c) \
       $(wildcard $(LEXER_DIR)/*.c) \
+      $(wildcard $(PARSER_DIR)/*.c) \
       $(wildcard $(DATA_TYPES_DIR)/*.c)
 
 OBJ = $(SRC:.c=.o)
