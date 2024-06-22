@@ -41,6 +41,7 @@ Array scan(Lexer *lexer) {
 	while (!isAtEnd(lexer)) {
 		char ch = peek(lexer, 0);
 
+		// NUMBERS
 		if (isNumber(ch)) {
 			int value = extractNumber(lexer);
 
@@ -54,6 +55,7 @@ Array scan(Lexer *lexer) {
 
 			array_push(&tokens, &token);
 
+		// IDENTIFIERS
 		} else if (isAlphaNumeric(ch)) {
 			char *value = extractIdentifier(lexer);
 
@@ -71,6 +73,12 @@ Array scan(Lexer *lexer) {
 			} else if (strcmp(value, "over") == 0) {
 				token.type = OVER;
 
+			} else if (strcmp(value, "true") == 0) {
+				token.type = BOOL_;
+
+			} else if (strcmp(value, "false") == 0) {
+				token.type = BOOL_;
+
 			} else {
 				// ERROR (but change later to IDENTIFIER type)
 				char buffer[32];
@@ -86,6 +94,7 @@ Array scan(Lexer *lexer) {
 
 			array_push(&tokens, &token);
 
+		// STRINGS
 		} else if (ch == '"') {
 			char *value = extractString(lexer);
 			
@@ -97,6 +106,7 @@ Array scan(Lexer *lexer) {
 
 			array_push(&tokens, &token);
 
+		// PLUS
 		} else if (ch == '+') {
 			Loc location = {lexer->file, lexer->line, lexer->col};
 
@@ -107,6 +117,33 @@ Array scan(Lexer *lexer) {
 			token.loc = location;
 
 			array_push(&tokens, &token);
+			consume(lexer);
+
+		// EQUAL
+		} else if (ch == '=') {
+			Loc location = {lexer->file, lexer->line, lexer->col};
+
+			Token token;
+			token.type = EQUAL;
+			token.value = malloc(sizeof(char));
+			*(char *)token.value = '=';
+			token.loc = location;
+
+			array_push(&tokens, &token);
+			consume(lexer);
+
+		// NEQUAL
+		} else if (ch == '!' && peek(lexer, 1) == '=') {
+			Loc location = {lexer->file, lexer->line, lexer->col};
+
+			Token token;
+			token.type = NEQUAL;
+			token.value = malloc(sizeof(char) * 2 + 1);
+			strcpy(token.value, "!=");
+			token.loc = location;
+
+			array_push(&tokens, &token);
+			consume(lexer);
 			consume(lexer);
 
 		} else {
