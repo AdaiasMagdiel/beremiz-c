@@ -60,8 +60,11 @@ void parser(Array tokens) {
 						*token
 					);
 
-					tokens_array_cleanup(&tokens);
-					tokens_array_cleanup(&stack);
+					if (strcmp(token->loc.file, "REPL") != 0) {
+						tokens_array_cleanup(&tokens);
+						tokens_array_cleanup(&stack);
+						exit(EXIT_FAILURE);
+					}
 				}
 
 				Token b;
@@ -100,8 +103,11 @@ void parser(Array tokens) {
 
 					error_token(buffer, *token);
 
-					tokens_array_cleanup(&tokens);
-					tokens_array_cleanup(&stack);
+					if (strcmp(token->loc.file, "REPL") != 0) {
+						tokens_array_cleanup(&tokens);
+						tokens_array_cleanup(&stack);
+						exit(EXIT_FAILURE);
+					}
 				}
 
 				array_push(&stack, &tk);
@@ -121,8 +127,11 @@ void parser(Array tokens) {
 						*token
 					);
 
-					tokens_array_cleanup(&tokens);
-					tokens_array_cleanup(&stack);
+					if (strcmp(token->loc.file, "REPL") != 0) {
+						tokens_array_cleanup(&tokens);
+						tokens_array_cleanup(&stack);
+						exit(EXIT_FAILURE);
+					}
 				}
 
 				Token b;
@@ -176,8 +185,11 @@ void parser(Array tokens) {
 
 					error_token(buffer, *token);
 
-					tokens_array_cleanup(&tokens);
-					tokens_array_cleanup(&stack);
+					if (strcmp(token->loc.file, "REPL") != 0) {
+						tokens_array_cleanup(&tokens);
+						tokens_array_cleanup(&stack);
+						exit(EXIT_FAILURE);
+					}
 				}
 
 				array_push(&stack, &tk);
@@ -197,8 +209,11 @@ void parser(Array tokens) {
 						*token
 					);
 
-					tokens_array_cleanup(&tokens);
-					tokens_array_cleanup(&stack);
+					if (strcmp(token->loc.file, "REPL") != 0) {
+						tokens_array_cleanup(&tokens);
+						tokens_array_cleanup(&stack);
+						exit(EXIT_FAILURE);
+					}
 				}
 
 				Token b;
@@ -252,8 +267,11 @@ void parser(Array tokens) {
 
 					error_token(buffer, *token);
 
-					tokens_array_cleanup(&tokens);
-					tokens_array_cleanup(&stack);
+					if (strcmp(token->loc.file, "REPL") != 0) {
+						tokens_array_cleanup(&tokens);
+						tokens_array_cleanup(&stack);
+						exit(EXIT_FAILURE);
+					}
 				}
 
 				array_push(&stack, &tk);
@@ -273,8 +291,11 @@ void parser(Array tokens) {
 						*token
 					);
 
-					tokens_array_cleanup(&tokens);
-					tokens_array_cleanup(&stack);
+					if (strcmp(token->loc.file, "REPL") != 0) {
+						tokens_array_cleanup(&tokens);
+						tokens_array_cleanup(&stack);
+						exit(EXIT_FAILURE);
+					}
 				}
 
 				Token value;
@@ -298,6 +319,12 @@ void parser(Array tokens) {
 					);
 
 					error_token(buffer, *token);
+
+					if (strcmp(token->loc.file, "REPL") != 0) {
+						tokens_array_cleanup(&tokens);
+						tokens_array_cleanup(&stack);
+						exit(EXIT_FAILURE);
+					}
 				}
 
 				ip++;
@@ -313,8 +340,11 @@ void parser(Array tokens) {
 						*token
 					);
 
-					tokens_array_cleanup(&tokens);
-					tokens_array_cleanup(&stack);
+					if (strcmp(token->loc.file, "REPL") != 0) {
+						tokens_array_cleanup(&tokens);
+						tokens_array_cleanup(&stack);
+						exit(EXIT_FAILURE);
+					}
 				}
 
 				Token token_to_dup = ((Token *)stack.array)[stack.length - 1];
@@ -347,8 +377,11 @@ void parser(Array tokens) {
 
 					error_token(buffer, *token);
 
-					tokens_array_cleanup(&tokens);
-					tokens_array_cleanup(&stack);
+					if (strcmp(token->loc.file, "REPL") != 0) {
+						tokens_array_cleanup(&tokens);
+						tokens_array_cleanup(&stack);
+						exit(EXIT_FAILURE);
+					}
 				}
 
 				array_push(&stack, &tk);
@@ -365,8 +398,11 @@ void parser(Array tokens) {
 						*token
 					);
 
-					tokens_array_cleanup(&tokens);
-					tokens_array_cleanup(&stack);
+					if (strcmp(token->loc.file, "REPL") != 0) {
+						tokens_array_cleanup(&tokens);
+						tokens_array_cleanup(&stack);
+						exit(EXIT_FAILURE);
+					}
 				}
 
 				Token token_to_over = ((Token *)stack.array)[stack.length - 2];
@@ -399,8 +435,11 @@ void parser(Array tokens) {
 
 					error_token(buffer, *token);
 
-					tokens_array_cleanup(&tokens);
-					tokens_array_cleanup(&stack);
+					if (strcmp(token->loc.file, "REPL") != 0) {
+						tokens_array_cleanup(&tokens);
+						tokens_array_cleanup(&stack);
+						exit(EXIT_FAILURE);
+					}
 				}
 
 				array_push(&stack, &tk);
@@ -416,10 +455,14 @@ void parser(Array tokens) {
 					token_type_to_str(token->type)
 				);
 
-				tokens_array_cleanup(&tokens);
-				tokens_array_cleanup(&stack);
-
 				error_token(buffer, *token);
+
+				if (strcmp(token->loc.file, "REPL") != 0) {
+					tokens_array_cleanup(&tokens);
+					tokens_array_cleanup(&stack);
+					exit(EXIT_FAILURE);
+				}
+
 				ip++;
 
 			} break;
