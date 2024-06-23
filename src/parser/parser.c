@@ -16,10 +16,10 @@ void parser(Array tokens) {
 		Token *token = &((Token *)tokens.array)[ip];
 
 		switch(token->type) {
-			case NUMBER: {
+			case INT_: {
 				Token tk = create_token_int(
 					token->loc,
-					NUMBER,
+					INT_,
 					*(int *)token->value
 				);
 
@@ -79,10 +79,10 @@ void parser(Array tokens) {
 
 				Token tk;
 
-				if (a.type == NUMBER && b.type == NUMBER) {
+				if (a.type == INT_ && b.type == INT_) {
 					tk = create_token_int(
 						token->loc,
-						NUMBER,
+						INT_,
 						*(int *)a.value + *(int *)b.value
 					);
 
@@ -160,7 +160,7 @@ void parser(Array tokens) {
 
 				Token tk;
 
-				if (a.type == NUMBER && b.type == NUMBER) {
+				if (a.type == INT_ && b.type == INT_) {
 					if (*(int *)a.value == *(int *)b.value) {
 						tk = create_token_string(
 							token->loc,
@@ -254,7 +254,7 @@ void parser(Array tokens) {
 
 				Token tk;
 
-				if (a.type == NUMBER && b.type == NUMBER) {
+				if (a.type == INT_ && b.type == INT_) {
 					if (*(int *)a.value != *(int *)b.value) {
 						tk = create_token_string(
 							token->loc,
@@ -348,7 +348,7 @@ void parser(Array tokens) {
 
 				Token tk;
 
-				if (a.type == NUMBER && b.type == NUMBER) {
+				if (a.type == INT_ && b.type == INT_) {
 					if (*(int *)a.value > *(int *)b.value) {
 						tk = create_token_string(
 							token->loc,
@@ -423,7 +423,7 @@ void parser(Array tokens) {
 
 				Token tk;
 
-				if (a.type == NUMBER && b.type == NUMBER) {
+				if (a.type == INT_ && b.type == INT_) {
 					if (*(int *)a.value < *(int *)b.value) {
 						tk = create_token_string(
 							token->loc,
@@ -493,7 +493,7 @@ void parser(Array tokens) {
 				Token value;
 				array_pop(&stack, &value);
 
-				if (value.type == NUMBER) {
+				if (value.type == INT_) {
 					printf("%d\n", *(int *)value.value);
 
 				} else if (value.type == STRING) {
@@ -549,10 +549,10 @@ void parser(Array tokens) {
 
 				Token tk;
 
-				if (token_to_dup.type == NUMBER) {
+				if (token_to_dup.type == INT_) {
 					tk = create_token_int(
 						token->loc,
-						NUMBER,
+						INT_,
 						*(int *)token_to_dup.value
 					);
 
@@ -621,10 +621,10 @@ void parser(Array tokens) {
 
 				Token tk;
 
-				if (token_to_over.type == NUMBER) {
+				if (token_to_over.type == INT_) {
 					tk = create_token_int(
 						token->loc,
-						NUMBER,
+						INT_,
 						*(int *)token_to_over.value
 					);
 
