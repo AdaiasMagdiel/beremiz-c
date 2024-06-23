@@ -1,1 +1,4 @@
 1 dup show show
+true dup show show
+false dup show show
+"toDup" dup show show
