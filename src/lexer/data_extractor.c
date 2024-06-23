@@ -99,8 +99,8 @@ char *extractIdentifier(Lexer *lexer) {
 }
 
 char *extractString(Lexer *lexer) {
-	int startCol = lexer->col;
-	int startLine = lexer->line;
+    int startCol = lexer->col;
+    int startLine = lexer->line;
 
     int buffer_size = 32;
     char *buffer = (char *)malloc(buffer_size * sizeof(char));
@@ -115,17 +115,17 @@ char *extractString(Lexer *lexer) {
         ch = peek(lexer, 0);
 
         if (ch == '"' && peek(lexer, -1) != '\\') {
-        	consume(lexer);
+            consume(lexer);
             break;
         }
 
         if (isAtEnd(lexer)) {
-        	Loc location = {lexer->file, startLine, startCol};
-			error("Syntax Error: Unclosed string.", location);
+            Loc location = {lexer->file, startLine, startCol};
+            error("Syntax Error: Unclosed string.", location);
 
-			if (strcmp(lexer->file, "REPL") != 0) {
-				exit(EXIT_FAILURE);
-			}
+            if (strcmp(lexer->file, "REPL") != 0) {
+                exit(EXIT_FAILURE);
+            }
         }
 
         if (buffer_idx >= buffer_size - 1) {
@@ -134,8 +134,31 @@ char *extractString(Lexer *lexer) {
             buffer = new_buffer;
         }
 
-        buffer[buffer_idx] = ch;
-        buffer_idx++;
+        if (ch == '\\' && !isAtEnd(lexer)) {
+            consume(lexer); // consume the backslash
+            ch = peek(lexer, 0);
+            switch (ch) {
+                case 'n':
+                    buffer[buffer_idx++] = '\n';
+                    break;
+                case 't':
+                    buffer[buffer_idx++] = '\t';
+                    break;
+                case '\\':
+                    buffer[buffer_idx++] = '\\';
+                    break;
+                case '"':
+                    buffer[buffer_idx++] = '"';
+                    break;
+                default:
+                    buffer[buffer_idx++] = '\\';
+                    buffer[buffer_idx++] = ch;
+                    break;
+            }
+        } else {
+            buffer[buffer_idx++] = ch;
+        }
+
         consume(lexer);
     }
 
@@ -143,3 +166,4 @@ char *extractString(Lexer *lexer) {
 
     return buffer;
 }
+
