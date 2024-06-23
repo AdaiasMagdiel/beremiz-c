@@ -28,6 +28,10 @@ void print_tokens(Array tokens) {
                 printf(" | Value: %d\n", *(int *)token->value);
                 break;
 
+            case FLOAT_:
+                printf(" | Value: %f\n", *(double *)token->value);
+                break;
+
             case PLUS:
             case EQUAL:
             case GREATER:

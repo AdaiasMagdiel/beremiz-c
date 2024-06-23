@@ -5,6 +5,7 @@
 
 #define TOKEN_TYPES \
     X(INT_,        "INT")         \
+    X(FLOAT_,      "FLOAT")       \
     X(STRING,      "STRING")      \
     X(BOOL_,       "BOOL")        \
     X(IDENTIFIER,  "IDENTIFIER")  \
