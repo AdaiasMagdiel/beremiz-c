@@ -28,6 +28,18 @@ void parser(Array tokens) {
 
 			} break;
 
+			case FLOAT_: {
+				Token tk = create_token_double(
+					token->loc,
+					FLOAT_,
+					*(double *)token->value
+				);
+
+				array_push(&stack, &tk);
+				ip++;
+
+			} break;
+
 			case STRING: {
 				Token tk = create_token_string(
 					token->loc,
@@ -496,6 +508,10 @@ void parser(Array tokens) {
 				if (value.type == INT_) {
 					printf("%d\n", *(int *)value.value);
 
+
+				} else if (value.type == FLOAT_) {
+					printf("%f\n", *(double *)value.value);
+
 				} else if (value.type == STRING) {
 					printf("%s\n", (char *)value.value);
 
@@ -647,8 +663,8 @@ void parser(Array tokens) {
 					snprintf(
 						buffer,
 						sizeof(buffer),
-						"Error: The OVER operator expects a number or string "
-						"on the stack.  However, you provided a value of "
+						"Error: The OVER operator expects a number, string or "
+						"a boolean on the stack. However, you provided a value of "
 						"type '%s'.",
 						token_type_to_str(token_to_over.type)
 					);
