@@ -7,6 +7,7 @@
 #include "data_extractor.h"
 #include "dynamic_array.h"
 #include "error.h"
+#include "lexer_utils.h"
 
 int isAtEnd(Lexer *lexer) {
 	const int length = strlen(lexer->content);
@@ -46,12 +47,7 @@ Array scan(Lexer *lexer) {
 			int value = extractNumber(lexer);
 
 			Loc location = {lexer->file, lexer->line, lexer->col};
-
-			Token token;
-			token.type = NUMBER;
-			token.value = malloc(sizeof(int));
-			*(int *)token.value = value;
-			token.loc = location;
+			Token token = create_token_int(location, NUMBER, value);
 
 			array_push(&tokens, &token);
 
@@ -60,9 +56,7 @@ Array scan(Lexer *lexer) {
 			char *value = extractIdentifier(lexer);
 
 			Loc location = {lexer->file, lexer->line, lexer->col - strlen(value)};
-			Token token;
-			token.value = (char *)value;
-			token.loc = location;
+			Token token = create_token_string(location, IDENTIFIER, value);
 
 			if (strcmp(value, "show") == 0) {
 				token.type = SHOW;
@@ -78,21 +72,9 @@ Array scan(Lexer *lexer) {
 
 			} else if (strcmp(value, "false") == 0) {
 				token.type = BOOL_;
-
-			} else {
-				// ERROR (but change later to IDENTIFIER type)
-				char buffer[32];
-				snprintf(buffer, sizeof(buffer), "Unexpected '%s'", value);
-
-				error_token(buffer, token);
-
-	            if (strcmp(lexer->file, "REPL") != 0) {
-	            	tokens_array_cleanup(&tokens);
-	            	cleanup(lexer);
-					exit(EXIT_FAILURE);
-				}
 			}
 
+			free(value);
 			array_push(&tokens, &token);
 
 		// STRINGS
@@ -100,22 +82,15 @@ Array scan(Lexer *lexer) {
 			char *value = extractString(lexer);
 			
 			Loc location = {lexer->file, lexer->line, lexer->col - strlen(value)-2};
-			Token token;
-			token.type = STRING;
-			token.value = (char *)value;
-			token.loc = location;
+			Token token = create_token_string(location, STRING, value);
 
+			free(value);
 			array_push(&tokens, &token);
 
 		// PLUS
 		} else if (ch == '+') {
 			Loc location = {lexer->file, lexer->line, lexer->col};
-
-			Token token;
-			token.type = PLUS;
-			token.value = malloc(sizeof(char));
-			*(char *)token.value = '+';
-			token.loc = location;
+			Token token = create_token_char(location, PLUS, '+');
 
 			array_push(&tokens, &token);
 			consume(lexer);
@@ -123,12 +98,23 @@ Array scan(Lexer *lexer) {
 		// EQUAL
 		} else if (ch == '=') {
 			Loc location = {lexer->file, lexer->line, lexer->col};
+			Token token = create_token_char(location, EQUAL, '=');
 
-			Token token;
-			token.type = EQUAL;
-			token.value = malloc(sizeof(char));
-			*(char *)token.value = '=';
-			token.loc = location;
+			array_push(&tokens, &token);
+			consume(lexer);
+
+		// GREATER
+		} else if (ch == '>') {
+			Loc location = {lexer->file, lexer->line, lexer->col};
+			Token token = create_token_char(location, GREATER, '>');
+
+			array_push(&tokens, &token);
+			consume(lexer);
+
+		// LESS
+		} else if (ch == '<') {
+			Loc location = {lexer->file, lexer->line, lexer->col};
+			Token token = create_token_char(location, LESS, '<');
 
 			array_push(&tokens, &token);
 			consume(lexer);
@@ -136,12 +122,7 @@ Array scan(Lexer *lexer) {
 		// NEQUAL
 		} else if (ch == '!' && peek(lexer, 1) == '=') {
 			Loc location = {lexer->file, lexer->line, lexer->col};
-
-			Token token;
-			token.type = NEQUAL;
-			token.value = malloc(sizeof(char) * 2 + 1);
-			strcpy(token.value, "!=");
-			token.loc = location;
+			Token token = create_token_string(location, NEQUAL, "!=");
 
 			array_push(&tokens, &token);
 			consume(lexer);
