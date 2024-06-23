@@ -4,6 +4,7 @@
 #include "parser.h"
 #include "tokens.h"
 #include "error.h"
+#include "lexer_utils.h"
 
 void parser(Array tokens) {
 	Array stack;
@@ -16,11 +17,11 @@ void parser(Array tokens) {
 
 		switch(token->type) {
 			case NUMBER: {
-				Token tk;
-				tk.type = NUMBER;
-				tk.value = malloc(sizeof(int));
-				*(int *)tk.value = *(int *)token->value;
-				tk.loc = token->loc;
+				Token tk = create_token_int(
+					token->loc,
+					NUMBER,
+					*(int *)token->value
+				);
 
 				array_push(&stack, &tk);
 				ip++;
@@ -28,11 +29,11 @@ void parser(Array tokens) {
 			} break;
 
 			case STRING: {
-				Token tk;
-			    tk.type = STRING;
-			    tk.value = malloc(strlen((char *)token->value) + 1);
-			    strcpy(tk.value, (char *)token->value);
-			    tk.loc = token->loc;
+				Token tk = create_token_string(
+					token->loc,
+					STRING,
+					(char *)token->value
+				);
 
 			    array_push(&stack, &tk);
 			    ip++;
@@ -40,11 +41,11 @@ void parser(Array tokens) {
 			} break;
 
 			case BOOL_: {
-				Token tk;
-			    tk.type = BOOL_;
-			    tk.value = malloc(strlen((char *)token->value) + 1);
-			    strcpy(tk.value, (char *)token->value);
-			    tk.loc = token->loc;
+				Token tk = create_token_string(
+					token->loc,
+					BOOL_,
+					(char *)token->value
+				);
 
 			    array_push(&stack, &tk);
 			    ip++;
@@ -65,6 +66,9 @@ void parser(Array tokens) {
 						tokens_array_cleanup(&stack);
 						exit(EXIT_FAILURE);
 					}
+
+					ip++;
+					continue;
 				}
 
 				Token b;
@@ -74,21 +78,29 @@ void parser(Array tokens) {
 				array_pop(&stack, &a);
 
 				Token tk;
-				tk.loc = token->loc;
 
 				if (a.type == NUMBER && b.type == NUMBER) {
-					tk.type = NUMBER;
-					tk.value = malloc(sizeof(int));
-					*(int *)tk.value = *(int *)a.value + *(int *)b.value;
+					tk = create_token_int(
+						token->loc,
+						NUMBER,
+						*(int *)a.value + *(int *)b.value
+					);
 
 				} else if (a.type == STRING && b.type == STRING) {
 					int a_length = strlen((char *)a.value);
 					int b_length = strlen((char *)b.value);
 
-					tk.type = STRING;
-					tk.value = malloc(a_length + b_length + 1);
-					strcpy(tk.value, (char *)a.value);
-					strcat(tk.value, (char *)b.value);
+					char *value = malloc(a_length + b_length + 1);
+					strcpy(value, (char *)a.value);
+					strcat(value, (char *)b.value);
+
+					tk = create_token_string(
+						token->loc,
+						STRING,
+						value
+					);
+
+					free(value);
 
 				} else {
 					char buffer[128];
@@ -108,6 +120,9 @@ void parser(Array tokens) {
 						tokens_array_cleanup(&stack);
 						exit(EXIT_FAILURE);
 					}
+
+					ip++;
+					continue;
 				}
 
 				array_push(&stack, &tk);
@@ -132,6 +147,9 @@ void parser(Array tokens) {
 						tokens_array_cleanup(&stack);
 						exit(EXIT_FAILURE);
 					}
+
+					ip++;
+					continue;
 				}
 
 				Token b;
@@ -141,19 +159,21 @@ void parser(Array tokens) {
 				array_pop(&stack, &a);
 
 				Token tk;
-				tk.type = BOOL_;
-				tk.loc = token->loc;
 
 				if (a.type == NUMBER && b.type == NUMBER) {
 					if (*(int *)a.value == *(int *)b.value) {
-						char *value = "true";
-						tk.value = malloc(sizeof(char) * strlen(value) + 1);
-						strcpy(tk.value, value);
+						tk = create_token_string(
+							token->loc,
+							BOOL_,
+							"true"
+						);
 
 					} else {
-						char *value = "false";
-						tk.value = malloc(sizeof(char) * strlen(value) + 1);
-						strcpy(tk.value, value);
+						tk = create_token_string(
+							token->loc,
+							BOOL_,
+							"false"
+						);
 					}
 
 				} else if (
@@ -161,14 +181,18 @@ void parser(Array tokens) {
 					(a.type == BOOL_ && b.type == BOOL_)
 				) {
 					if (strcmp((char *)a.value, (char *)b.value) == 0) {
-						char *value = "true";
-						tk.value = malloc(sizeof(char) * strlen(value) + 1);
-						strcpy(tk.value, value);
+						tk = create_token_string(
+							token->loc,
+							BOOL_,
+							"true"
+						);
 
 					} else {
-						char *value = "false";
-						tk.value = malloc(sizeof(char) * strlen(value) + 1);
-						strcpy(tk.value, value);
+						tk = create_token_string(
+							token->loc,
+							BOOL_,
+							"false"
+						);
 					}
 
 				} else {
@@ -190,6 +214,9 @@ void parser(Array tokens) {
 						tokens_array_cleanup(&stack);
 						exit(EXIT_FAILURE);
 					}
+
+					ip++;
+					continue;
 				}
 
 				array_push(&stack, &tk);
@@ -214,6 +241,9 @@ void parser(Array tokens) {
 						tokens_array_cleanup(&stack);
 						exit(EXIT_FAILURE);
 					}
+
+					ip++;
+					continue;
 				}
 
 				Token b;
@@ -223,19 +253,21 @@ void parser(Array tokens) {
 				array_pop(&stack, &a);
 
 				Token tk;
-				tk.type = BOOL_;
-				tk.loc = token->loc;
 
 				if (a.type == NUMBER && b.type == NUMBER) {
 					if (*(int *)a.value != *(int *)b.value) {
-						char *value = "true";
-						tk.value = malloc(sizeof(char) * strlen(value) + 1);
-						strcpy(tk.value, value);
+						tk = create_token_string(
+							token->loc,
+							BOOL_,
+							"true"
+						);
 
 					} else {
-						char *value = "false";
-						tk.value = malloc(sizeof(char) * strlen(value) + 1);
-						strcpy(tk.value, value);
+						tk = create_token_string(
+							token->loc,
+							BOOL_,
+							"false"
+						);
 					}
 
 				} else if (
@@ -243,14 +275,18 @@ void parser(Array tokens) {
 					(a.type == BOOL_ && b.type == BOOL_)
 				) {
 					if (strcmp((char *)a.value, (char *)b.value) != 0) {
-						char *value = "true";
-						tk.value = malloc(sizeof(char) * strlen(value) + 1);
-						strcpy(tk.value, value);
+						tk = create_token_string(
+							token->loc,
+							BOOL_,
+							"true"
+						);
 
 					} else {
-						char *value = "false";
-						tk.value = malloc(sizeof(char) * strlen(value) + 1);
-						strcpy(tk.value, value);
+						tk = create_token_string(
+							token->loc,
+							BOOL_,
+							"false"
+						);
 					}
 
 				} else {
@@ -272,6 +308,159 @@ void parser(Array tokens) {
 						tokens_array_cleanup(&stack);
 						exit(EXIT_FAILURE);
 					}
+
+					ip++;
+					continue;
+				}
+
+				array_push(&stack, &tk);
+
+				free(a.value);
+				free(b.value);
+				ip++;
+
+			} break;
+
+			case GREATER: {
+				if (stack.length < 2) {
+					error_token(
+						"Error: Missing operands for GREATER operation.\n\n"
+						"Please ensure you have at least two values available "
+						"before performing the comparasion.",
+						*token
+					);
+
+					if (strcmp(token->loc.file, "REPL") != 0) {
+						tokens_array_cleanup(&tokens);
+						tokens_array_cleanup(&stack);
+						exit(EXIT_FAILURE);
+					}
+
+					ip++;
+					continue;
+				}
+
+				Token b;
+				array_pop(&stack, &b);
+
+				Token a;
+				array_pop(&stack, &a);
+
+				Token tk;
+
+				if (a.type == NUMBER && b.type == NUMBER) {
+					if (*(int *)a.value > *(int *)b.value) {
+						tk = create_token_string(
+							token->loc,
+							BOOL_,
+							"true"
+						);
+
+					} else {
+						tk = create_token_string(
+							token->loc,
+							BOOL_,
+							"false"
+						);
+					}
+
+				} else {
+					char buffer[256];
+					snprintf(
+						buffer,
+						sizeof(buffer),
+						"Error: Invalid Comparison\n\n"
+						"The GREATER operation can only compare number values. "
+						"You cannot "
+						"compare '%s' with '%s' without an explicit conversion.",
+						token_type_to_str(a.type), token_type_to_str(b.type)
+					);
+
+					error_token(buffer, *token);
+
+					if (strcmp(token->loc.file, "REPL") != 0) {
+						tokens_array_cleanup(&tokens);
+						tokens_array_cleanup(&stack);
+						exit(EXIT_FAILURE);
+					}
+
+					ip++;
+					continue;
+				}
+
+				array_push(&stack, &tk);
+
+				free(a.value);
+				free(b.value);
+				ip++;
+
+			} break;
+
+			case LESS: {
+				if (stack.length < 2) {
+					error_token(
+						"Error: Missing operands for LESS operation.\n\n"
+						"Please ensure you have at least two values available "
+						"before performing the comparasion.",
+						*token
+					);
+
+					if (strcmp(token->loc.file, "REPL") != 0) {
+						tokens_array_cleanup(&tokens);
+						tokens_array_cleanup(&stack);
+						exit(EXIT_FAILURE);
+					}
+
+					ip++;
+					continue;
+				}
+
+				Token b;
+				array_pop(&stack, &b);
+
+				Token a;
+				array_pop(&stack, &a);
+
+				Token tk;
+
+				if (a.type == NUMBER && b.type == NUMBER) {
+					if (*(int *)a.value < *(int *)b.value) {
+						tk = create_token_string(
+							token->loc,
+							BOOL_,
+							"true"
+						);
+
+					} else {
+						tk = create_token_string(
+							token->loc,
+							BOOL_,
+							"false"
+						);
+					}
+
+				} else {
+					char buffer[256];
+					snprintf(
+						buffer,
+						sizeof(buffer),
+						"Error: Invalid Comparison\n\n"
+						"The LESS operation can only compare number values. "
+						"You cannot "
+						"compare '%s' with '%s' without an explicit conversion.",
+						token_type_to_str(a.type), token_type_to_str(b.type)
+					);
+
+					error_token(buffer, *token);
+
+					if (strcmp(token->loc.file, "REPL") != 0) {
+						tokens_array_cleanup(&tokens);
+						tokens_array_cleanup(&stack);
+						exit(EXIT_FAILURE);
+					}
+
+					ip++;
+					continue;
 				}
 
 				array_push(&stack, &tk);
@@ -296,6 +485,9 @@ void parser(Array tokens) {
 						tokens_array_cleanup(&stack);
 						exit(EXIT_FAILURE);
 					}
+
+					ip++;
+					continue;
 				}
 
 				Token value;
@@ -325,6 +517,9 @@ void parser(Array tokens) {
 						tokens_array_cleanup(&stack);
 						exit(EXIT_FAILURE);
 					}
+
+					ip++;
+					continue;
 				}
 
 				ip++;
@@ -345,32 +540,43 @@ void parser(Array tokens) {
 						tokens_array_cleanup(&stack);
 						exit(EXIT_FAILURE);
 					}
+
+					ip++;
+					continue;
 				}
 
 				Token token_to_dup = ((Token *)stack.array)[stack.length - 1];
 
 				Token tk;
-				tk.loc = token->loc;
 
 				if (token_to_dup.type == NUMBER) {
-					tk.type = NUMBER;
-					tk.value = malloc(sizeof(int));
-					*(int *)tk.value = *(int *)token_to_dup.value;
+					tk = create_token_int(
+						token->loc,
+						NUMBER,
+						*(int *)token_to_dup.value
+					);
 
 				} else if (token_to_dup.type == STRING) {
-					int length = strlen((char *)token_to_dup.value);
+					tk = create_token_string(
+						token->loc,
+						STRING,
+						(char *)token_to_dup.value
+					);
 
-					tk.type = STRING;
-					tk.value = malloc(length + 1);
-					strcpy(tk.value, (char *)token_to_dup.value);
+				} else if (token_to_dup.type == BOOL_) {
+					tk = create_token_string(
+						token->loc,
+						BOOL_,
+						(char *)token_to_dup.value
+					);
 
 				} else {
 					char buffer[128];
 					snprintf(
 						buffer,
 						sizeof(buffer),
-						"Error: The DUP operator expects a number or string "
-						"on the stack.  However, you provided a value of "
+						"Error: The DUP operator expects a number, string or "
+						"boolean on the stack. However, you provided a value of "
 						"type '%s'.",
 						token_type_to_str(token_to_dup.type)
 					);
@@ -382,6 +588,9 @@ void parser(Array tokens) {
 						tokens_array_cleanup(&stack);
 						exit(EXIT_FAILURE);
 					}
+
+					ip++;
+					continue;
 				}
 
 				array_push(&stack, &tk);
@@ -403,31 +612,42 @@ void parser(Array tokens) {
 						tokens_array_cleanup(&stack);
 						exit(EXIT_FAILURE);
 					}
+
+					ip++;
+					continue;
 				}
 
 				Token token_to_over = ((Token *)stack.array)[stack.length - 2];
 
 				Token tk;
-				tk.loc = token->loc;
 
 				if (token_to_over.type == NUMBER) {
-					tk.type = NUMBER;
-					tk.value = malloc(sizeof(int));
-					*(int *)tk.value = *(int *)token_to_over.value;
+					tk = create_token_int(
+						token->loc,
+						NUMBER,
+						*(int *)token_to_over.value
+					);
 
 				} else if (token_to_over.type == STRING) {
-					int length = strlen((char *)token_to_over.value);
+					tk = create_token_string(
+						token->loc,
+						STRING,
+						(char *)token_to_over.value
+					);
 
-					tk.type = STRING;
-					tk.value = malloc(length + 1);
-					strcpy(tk.value, (char *)token_to_over.value);
+				} else if (token_to_over.type == BOOL_) {
+					tk = create_token_string(
+						token->loc,
+						BOOL_,
+						(char *)token_to_over.value
+					);
 
 				} else {
 					char buffer[128];
 					snprintf(
 						buffer,
 						sizeof(buffer),
-						"Error: The DUP operator expects a number or string "
+						"Error: The OVER operator expects a number or string "
 						"on the stack.  However, you provided a value of "
 						"type '%s'.",
 						token_type_to_str(token_to_over.type)
@@ -440,6 +660,9 @@ void parser(Array tokens) {
 						tokens_array_cleanup(&stack);
 						exit(EXIT_FAILURE);
 					}
+
+					ip++;
+					continue;
 				}
 
 				array_push(&stack, &tk);
