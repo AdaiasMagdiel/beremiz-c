@@ -3,14 +3,17 @@
 
 #include "dynamic_array.h"
 
-#define TOKEN_TYPES     \
-    X(NUMBER, "NUMBER") \
-    X(STRING, "STRING") \
-    X(BOOL_,  "BOOL")   \
+#define TOKEN_TYPES \
+    X(NUMBER,      "NUMBER")      \
+    X(STRING,      "STRING")      \
+    X(BOOL_,       "BOOL")        \
+    X(IDENTIFIER,  "IDENTIFIER")  \
 \
-    X(PLUS,   "PLUS")   \
-    X(EQUAL,  "EQUAL")  \
-    X(NEQUAL, "NEQUAL") \
+    X(PLUS,    "PLUS")     \
+    X(EQUAL,   "EQUAL")    \
+    X(NEQUAL,  "NEQUAL")   \
+    X(GREATER, "GREATER")  \
+    X(LESS,    "LESS")     \
 \
     X(SHOW,   "SHOW")   \
     X(DUP,    "DUP")    \
