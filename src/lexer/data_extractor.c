@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include "data_extractor.h"
@@ -18,55 +19,102 @@ int isAlphaNumeric(char ch) {
 	return isNumber(ch) || isAlpha(ch);
 }
 
-int extractNumber(Lexer *lexer) {
-	int startCol = lexer->col;
-	char buffer[17];
-	int buffer_idx = 0;
-	char ch;
+double extractNumber(Lexer *lexer, int *isFloat) {
+    *isFloat = 0;
 
-	int isNegative = lexer->current > 0 && peek(lexer, -1) == '-';
+    int startCol = lexer->col;
+    char buffer[64];
+    int buffer_idx = 0;
+    char ch;
 
-	while (1) {
-		ch = peek(lexer, 0);
+    int isNegative = 0;
+    if (
+        (lexer->current > 0 && peek(lexer, -1) == '-') || 
+        (lexer->current > 1 && (peek(lexer, -1) == '.' && peek(lexer, -2) == '-')) 
+    ) {
+        isNegative = 1;
+    }
 
-		if (!isNumber(ch)) {
-			if (ch == '-' && isNegative) {
-				Loc location = {lexer->file, lexer->line, startCol};
+    int decimalPointCount = 0;
+    if (lexer->current > 0 && peek(lexer, -1) == '.') {
+        *isFloat = 1;
+        decimalPointCount++;
 
-				error(
-					"Error: Invalid Number Format.\n\nThe input contains an "
-					"invalid number. Specifically, two minus signs (-) were "
-					"found in a row, which is not allowed in number "
-					"formatting.",
-					location
-				);
+        buffer[buffer_idx++] = '0';
+        buffer[buffer_idx++] = '.';
+    }
 
-				if (strcmp(lexer->file, "REPL") != 0) {
-					cleanup(lexer);
-					exit(EXIT_FAILURE);
-				} else {
-					break;
-				}
-			}
+    while (1) {
+        ch = peek(lexer, 0);
 
-			break;
-		}
+        if (ch == '_') {
+            consume(lexer);
+            continue;
+        }
 
-		buffer[buffer_idx] = ch;
-		buffer_idx++;
+        if (!isNumber(ch)) {
+            if (ch == '-' && isNegative) {
+                Loc location = {lexer->file, lexer->line, startCol};
 
-		consume(lexer);
-	}
+                error(
+                    "Error: Invalid Number Format.\n\nThe input contains an "
+                    "invalid number. Specifically, two minus signs (-) were "
+                    "found in a row, which is not allowed in number "
+                    "formatting.",
+                    location
+                );
 
-	buffer[buffer_idx] = '\0';
+                if (strcmp(lexer->file, "REPL") != 0) {
+                    cleanup(lexer);
+                    exit(EXIT_FAILURE);
+                } else {
+                    break;
+                }
+            } else if (ch == '.') {
+                if (decimalPointCount > 0) {
+                    Loc location = {lexer->file, lexer->line, startCol};
 
-	int value = atoi(buffer);
+                    error(
+                        "Error: Invalid Number Format.\n\nThe input contains an "
+                        "invalid number. Specifically, multiple decimal points (.) "
+                        "were found in a row, which is not allowed in number "
+                        "formatting.",
+                        location
+                    );
 
-	if (isNegative) {
-		value *= -1;
-	}
+                    if (strcmp(lexer->file, "REPL") != 0) {
+                        cleanup(lexer);
+                        exit(EXIT_FAILURE);
+                    } else {
+                        break;
+                    }
+                }
 
-	return value;
+                *isFloat = 1;
+                decimalPointCount++;
+
+                buffer[buffer_idx++] = '.';
+                consume(lexer);
+                continue;
+
+            } else {
+                break;
+            }
+        }
+
+        buffer[buffer_idx++] = ch;
+        consume(lexer);
+    }
+
+    buffer[buffer_idx] = '\0';
+
+    double value = atof(buffer);
+
+    if (isNegative) {
+        value *= -1;
+    }
+
+    return value;
 }
 
 char *extractIdentifier(Lexer *lexer) {

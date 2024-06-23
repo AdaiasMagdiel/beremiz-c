@@ -7,7 +7,7 @@ int isNumber(char ch);
 int isAlpha(char ch);
 int isAlphaNumeric(char ch);
 
-int extractNumber(Lexer *lexer);
+double extractNumber(Lexer *lexer, int *isFloat);
 char *extractIdentifier(Lexer *lexer);
 char *extractString(Lexer *lexer);
 
