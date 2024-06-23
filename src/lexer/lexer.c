@@ -6,7 +6,6 @@
 #include "tokens.h"
 #include "data_extractor.h"
 #include "dynamic_array.h"
-#include "error.h"
 #include "lexer_utils.h"
 
 int isAtEnd(Lexer *lexer) {
@@ -44,10 +43,17 @@ Array scan(Lexer *lexer) {
 
 		// NUMBERS
 		if (isNumber(ch)) {
-			int value = extractNumber(lexer);
+			int isFloat;
+			double value = extractNumber(lexer, &isFloat);
 
 			Loc location = {lexer->file, lexer->line, lexer->col};
-			Token token = create_token_int(location, INT_, value);
+			Token token;
+
+			if (isFloat) {
+				token = create_token_double(location, FLOAT_, value);
+			} else {
+				token = create_token_int(location, INT_, (int) value);
+			}
 
 			array_push(&tokens, &token);
 
