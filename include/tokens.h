@@ -4,7 +4,7 @@
 #include "dynamic_array.h"
 
 #define TOKEN_TYPES \
-    X(NUMBER,      "NUMBER")      \
+    X(INT_,        "INT")         \
     X(STRING,      "STRING")      \
     X(BOOL_,       "BOOL")        \
     X(IDENTIFIER,  "IDENTIFIER")  \

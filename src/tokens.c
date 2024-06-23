@@ -24,7 +24,7 @@ void print_tokens(Array tokens) {
         printf("Type: %s", token_type_to_str(token->type));
 
         switch (token->type) {
-            case NUMBER:
+            case INT_:
                 printf(" | Value: %d\n", *(int *)token->value);
                 break;
 
