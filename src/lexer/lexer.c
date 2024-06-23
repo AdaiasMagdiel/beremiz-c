@@ -47,7 +47,7 @@ Array scan(Lexer *lexer) {
 			int value = extractNumber(lexer);
 
 			Loc location = {lexer->file, lexer->line, lexer->col};
-			Token token = create_token_int(location, NUMBER, value);
+			Token token = create_token_int(location, INT_, value);
 
 			array_push(&tokens, &token);
 
