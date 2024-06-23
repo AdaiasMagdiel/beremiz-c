@@ -22,6 +22,16 @@ Token create_token_int(const Loc location, const TokenType type, const int value
 	return token;
 }
 
+Token create_token_double(const Loc location, const TokenType type, const double value) {
+	Token token;
+	token.type = type;
+	token.value = malloc(sizeof(double));
+	*(double *)token.value = value;
+	token.loc = location;
+
+	return token;
+}
+
 Token create_token_string(const Loc location, const TokenType type, const char *value) {
 	int value_len = strlen(value);
 
